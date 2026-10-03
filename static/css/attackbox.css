@@ -1,0 +1,298 @@
+/* Right Panel: AttackBox Simulated Cybersecurity Desktop */
+.attackbox-desktop {
+  flex: 1;
+  position: relative;
+  background: radial-gradient(circle at 50% 30%, #0d172a 0%, #06090e 100%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Background Cyber Grid Overlay */
+.attackbox-desktop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+/* Desktop Watermark */
+.desktop-watermark {
+  position: absolute;
+  bottom: 60px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.desktop-watermark .wm-title {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  letter-spacing: 2px;
+}
+
+.desktop-watermark .wm-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Desktop Shortcuts Grid */
+.desktop-icons-grid {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 90px);
+  gap: 16px;
+  z-index: 10;
+}
+
+.desktop-icon-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 8px 6px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.desktop-icon-btn:hover {
+  background: rgba(0, 240, 255, 0.08);
+  border-color: rgba(0, 240, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.desktop-icon-btn:focus {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: var(--accent-cyan);
+}
+
+.icon-graphic-box {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.desktop-icon-btn:hover .icon-graphic-box {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 12px var(--accent-cyan-glow);
+}
+
+.icon-graphic-box svg {
+  width: 26px;
+  height: 26px;
+}
+
+.desktop-icon-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-main);
+  text-align: center;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+
+/* Window Manager: Floating Windows */
+.window-manager-viewport {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-window {
+  position: absolute;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.cyber-window.active {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.85), 0 0 16px var(--accent-cyan-glow);
+}
+
+.cyber-window.minimized {
+  display: none !important;
+}
+
+.cyber-window.maximized {
+  top: 8px !important;
+  left: 8px !important;
+  width: calc(100% - 16px) !important;
+  height: calc(100% - 16px) !important;
+  border-radius: var(--radius-sm);
+}
+
+/* Window Title Bar */
+.window-title-bar {
+  height: 36px;
+  background: linear-gradient(180deg, #162032 0%, #0e1524 100%);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.cyber-window.active .window-title-bar {
+  border-bottom-color: rgba(0, 240, 255, 0.3);
+}
+
+.window-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.window-title-icon {
+  width: 16px;
+  height: 16px;
+  fill: var(--accent-cyan);
+}
+
+.window-title-text {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+
+.window-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.win-control-btn {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--transition-fast);
+  background-color: #475569;
+}
+
+.win-control-btn:hover {
+  opacity: 0.85;
+}
+
+.win-control-btn.minimize { background-color: #f59e0b; }
+.win-control-btn.maximize { background-color: #10b981; }
+.win-control-btn.close { background-color: #ef4444; }
+
+/* Window Content Area */
+.window-body {
+  flex: 1;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Bottom Taskbar */
+.attackbox-taskbar {
+  height: var(--taskbar-height);
+  background: linear-gradient(180deg, #0f172a 0%, #070c14 100%);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  position: relative;
+  z-index: 100;
+}
+
+.taskbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.taskbar-start-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid var(--border-accent);
+  color: var(--accent-cyan);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.taskbar-items-list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.taskbar-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.taskbar-item-btn.active {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: var(--accent-cyan);
+  color: var(--text-bright);
+  box-shadow: 0 0 8px var(--accent-cyan-glow);
+}
+
+.taskbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.taskbar-clock {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}

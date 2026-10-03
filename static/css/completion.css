@@ -1,0 +1,240 @@
+/* ==========================================================================
+   MISSION 06: ATTACK GRAPH RECONSTRUCTION BOARD
+   ========================================================================== */
+.graph-builder-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.graph-instruction-box {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--text-muted);
+  border-left: 3px solid var(--accent-cyan);
+}
+
+.graph-slots-sequence {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.graph-slot-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  transition: all var(--transition-fast);
+}
+
+.graph-slot-item.correct {
+  border: 1px solid var(--status-success);
+  background: rgba(0, 230, 118, 0.08);
+}
+
+.graph-slot-item.incorrect {
+  border: 1px solid var(--status-danger);
+  background: rgba(255, 23, 68, 0.08);
+}
+
+.slot-step-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  width: 60px;
+}
+
+.slot-select-dropdown {
+  flex: 1;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-bright);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.slot-select-dropdown:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan-glow);
+}
+
+/* ==========================================================================
+   MISSION 07: KNOWLEDGE CHECK & FLAG SUBMISSION
+   ========================================================================== */
+.knowledge-check-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.kc-question-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kc-question-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+}
+
+.kc-input-text {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  color: var(--text-bright);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  outline: none;
+}
+
+.kc-input-text:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan-glow);
+}
+
+.kc-textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+/* Flag Submission Card */
+.flag-submission-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(16, 25, 42, 0.9) 0%, rgba(8, 13, 22, 0.95) 100%);
+  border: 1px solid var(--status-success);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: 0 0 15px var(--status-success-glow);
+}
+
+.flag-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.flag-input-field {
+  flex: 1;
+  background: #05080f;
+  border: 1px solid var(--status-success);
+  color: #00e676;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.flag-input-field::placeholder {
+  color: #00796b;
+}
+
+/* ==========================================================================
+   FINAL COMPLETION MODAL SCREEN
+   ========================================================================== */
+.completion-hero-banner {
+  text-align: center;
+  padding: 20px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.case-closed-badge {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--status-success);
+  background: rgba(0, 230, 118, 0.15);
+  border: 1px solid var(--status-success);
+  padding: 4px 16px;
+  border-radius: var(--radius-full);
+  letter-spacing: 2px;
+  box-shadow: 0 0 16px var(--status-success-glow);
+}
+
+.completion-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-bright);
+  font-family: var(--font-display);
+}
+
+.completion-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.comp-stat-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.comp-stat-card .val {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+}
+
+.comp-stat-card .lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.attack-path-summary-box {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.attack-path-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+}
+
+.attack-path-step .arrow {
+  color: var(--accent-cyan);
+}

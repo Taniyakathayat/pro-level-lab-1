@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aurelia Cyber Systems — Case NX-047: The Ghost in the Ledger</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="/static/css/variables.css">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/left-panel.css">
+  <link rel="stylesheet" href="/static/css/attackbox.css">
+  <link rel="stylesheet" href="/static/css/tools.css">
+  <link rel="stylesheet" href="/static/css/completion.css">
+</head>
+<body>
+
+  <!-- Top App HUD Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-badge">
+        <svg class="brand-logo-icon" viewBox="0 0 32 32">
+          <polygon points="16,2 30,10 30,22 16,30 2,22 2,10" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="16" cy="16" r="5" fill="currentColor"/>
+        </svg>
+        <div class="brand-title-group">
+          <h1>Aurelia Cyber Systems</h1>
+          <div class="sub-label">AI × WEB3 SECURITY INVESTIGATION PLATFORM</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="hud-stat-box">
+        <span class="hud-stat-label">CASE ID</span>
+        <span class="hud-stat-value" style="color:var(--accent-cyan);">NX-047</span>
+      </div>
+      <div class="hud-stat-box">
+        <span class="hud-stat-label">DIFFICULTY</span>
+        <span class="hud-stat-value" style="color:#ff5252;">PRO / HARD</span>
+      </div>
+      <div class="hud-stat-box">
+        <span class="hud-stat-label">LAB STATUS</span>
+        <span class="hud-stat-value live-pill"><span class="live-dot"></span> LIVE</span>
+      </div>
+      <div class="hud-stat-box">
+        <span class="hud-stat-label">INVESTIGATION TIMER</span>
+        <span class="hud-stat-value timer" id="hud-timer-val">00:00:00</span>
+      </div>
+      <div class="hud-stat-box">
+        <span class="hud-stat-label">RECOMMENDED</span>
+        <span class="hud-stat-value">50 MIN</span>
+      </div>
+      <div class="hud-stat-box">
+        <span class="hud-stat-label">PROGRESS</span>
+        <span class="hud-stat-value" id="hud-progress-val" style="color:var(--status-success);">0 / 6</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button class="cyber-btn" id="audio-toggle-btn" title="Toggle cyber sound FX">🔊 AUDIO ON</button>
+      <button class="cyber-btn" id="instructor-mode-trigger-btn" title="Instructor Debug Panel">⚙ INSTRUCTOR</button>
+      <button class="cyber-btn danger" id="hud-reset-lab-btn" title="Reset all progress">↺ RESET LAB</button>
+    </div>
+  </header>
+
+  <!-- Master App Container -->
+  <div class="app-container">
+    
+    <!-- LEFT PANEL: Investigation & Mission Dashboard -->
+    <aside class="left-panel" id="left-panel">
+      <div class="left-panel-header">
+        <div class="case-meta-row">
+          <span class="case-id-badge">CASE: NX-047</span>
+          <span class="difficulty-badge">PRO LEVEL LAB</span>
+        </div>
+        <div class="case-title">The Ghost in the Ledger</div>
+        <div class="case-subtitle">AI Security × Web3 Forensics × Smart Contracts</div>
+      </div>
+
+      <!-- Navigation Tabs inside Left Panel -->
+      <nav class="panel-tab-nav">
+        <button class="panel-tab-btn active" data-tab="missions">
+          Sub-Labs <span class="tab-badge" id="tab-mission-badge">1-6</span>
+        </button>
+        <button class="panel-tab-btn" data-tab="attack-graph">
+          Attack Graph <span class="tab-badge">M05</span>
+        </button>
+        <button class="panel-tab-btn" data-tab="knowledge-check">
+          RCA & Flag <span class="tab-badge">M06</span>
+        </button>
+      </nav>
+
+      <!-- Tab 1: Missions Timeline & Detail -->
+      <div class="left-panel-content left-panel-tab-content" id="tab-content-missions">
+        <div class="section-label">SUB-LAB TIMELINE</div>
+        <div class="mission-timeline-list" id="mission-timeline-list">
+          <!-- Rendered via missions.js -->
+        </div>
+
+        <div class="section-label" style="margin-top:8px;">ACTIVE SUB-LAB BRIEF</div>
+        <div id="active-mission-detail-container">
+          <!-- Rendered via missions.js -->
+        </div>
+      </div>
+
+      <!-- Tab 2: Attack Graph Reconstruction (Sub-Lab 05) -->
+      <div class="left-panel-content left-panel-tab-content" id="tab-content-attack-graph" style="display:none;">
+        <div class="graph-builder-container">
+          <div class="detail-header">
+            <span class="detail-phase-tag">SUB-LAB 05 INTERACTIVE BOARD</span>
+            <div class="detail-title">Reconstruct the Attack Path</div>
+          </div>
+          <div class="graph-instruction-box">
+            Assemble the full forensic kill chain in sequential order (1 to 7). Connect the adversary's path from the dormant wallet and AI prompt poisoning to the smart contract liquidation.
+          </div>
+          
+          <div class="graph-slots-sequence" id="attack-graph-slots">
+            <!-- Rendered via graph-reconstruction.js -->
+          </div>
+
+          <button class="cyber-btn primary" id="submit-attack-graph-btn" style="width:100%;margin-top:8px;">
+            Verify Attack Reconstruction &rarr;
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab 3: Knowledge Check & Flag Submission (Sub-Lab 06) -->
+      <div class="left-panel-content left-panel-tab-content" id="tab-content-knowledge-check" style="display:none;">
+        <div class="knowledge-check-card">
+          <div class="detail-header">
+            <span class="detail-phase-tag">SUB-LAB 06 ROOT CAUSE ANALYSIS</span>
+            <div class="detail-title">Incident Assessment & RCA</div>
+          </div>
+
+          <div class="kc-question-group">
+            <label class="kc-question-label">1. Authentication in Web3 verifies:</label>
+            <input type="text" id="kc-authn-input" class="kc-input-text" placeholder="e.g. Identity / Wallet signature verification (who the caller is)">
+          </div>
+
+          <div class="kc-question-group">
+            <label class="kc-question-label">2. Authorization in Web3 verifies:</label>
+            <input type="text" id="kc-authz-input" class="kc-input-text" placeholder="e.g. Permissions & Clearances (what actions/funds the caller is allowed to access)">
+          </div>
+
+          <div class="kc-question-group">
+            <label class="kc-question-label">3. Incident Executive Summary (2–3 sentences):</label>
+            <textarea id="kc-summary-input" class="kc-input-text kc-textarea" placeholder="Explain how the poisoned Oracle context tricked the AI Security Guard into instructing the Action Broker to sign the 5M USDC liquidation..."></textarea>
+          </div>
+
+          <button class="cyber-btn primary" id="submit-kc-btn" style="width:100%;">
+            Submit Knowledge Check &rarr;
+          </button>
+        </div>
+
+        <div class="flag-submission-box">
+          <div class="section-label" style="color:var(--status-success);">CAPTURED FLAG SUBMISSION</div>
+          <p style="font-size:11px;color:var(--text-muted);">
+            Paste the decrypted flag obtained during your Sub-Lab 04 smart contract exploit.
+          </p>
+          <div class="flag-input-group">
+            <input type="text" id="flag-input-field" class="flag-input-field" placeholder="LAB{ai_context_poisoned_...}">
+            <button class="cyber-btn success" id="submit-flag-btn">Submit Flag</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resizer handle -->
+      <div class="panel-resizer" id="panel-resizer"></div>
+    </aside>
+
+    <!-- RIGHT PANEL: AttackBox Simulated Desktop -->
+    <main class="right-panel">
+      <div class="attackbox-desktop" id="attackbox-desktop">
+        
+        <!-- Watermark -->
+        <div class="desktop-watermark">
+          <span class="wm-title">AURELIA ATTACKBOX</span>
+          <span class="wm-sub">AI & WEB3 ISOLATED WORKSTATION v2.8</span>
+        </div>
+
+        <!-- Desktop Shortcuts Grid -->
+        <div class="desktop-icons-grid">
+          <button class="desktop-icon-btn" data-target-window="browser" title="Double click to open">
+            <div class="icon-graphic-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <span class="desktop-icon-label">Cyber Browser</span>
+          </button>
+
+          <button class="desktop-icon-btn" data-target-window="terminal" title="Double click to open">
+            <div class="icon-graphic-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            </div>
+            <span class="desktop-icon-label">Cyber Terminal</span>
+          </button>
+
+          <button class="desktop-icon-btn" data-target-window="composer" title="Double click to open">
+            <div class="icon-graphic-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <span class="desktop-icon-label">Req Composer</span>
+          </button>
+
+          <button class="desktop-icon-btn" data-target-window="vault" title="Double click to open">
+            <div class="icon-graphic-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg>
+            </div>
+            <span class="desktop-icon-label">Evidence Vault</span>
+          </button>
+
+          <button class="desktop-icon-btn" data-target-window="map" title="Double click to open">
+            <div class="icon-graphic-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </div>
+            <span class="desktop-icon-label">Architecture Map</span>
+          </button>
+        </div>
+
+        <!-- Window Manager Viewport -->
+        <div class="window-manager-viewport">
+          
+          <!-- Window 1: Cyber Browser -->
+          <div class="cyber-window active" id="window-browser" style="top:20px;left:180px;width:740px;height:530px;z-index:100;">
+            <div class="window-title-bar">
+              <div class="window-title-group">
+                <svg class="window-title-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" fill="none"/><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor"/></svg>
+                <span class="window-title-text">Cyber Browser — Web3 & AI Mesh Explorer</span>
+              </div>
+              <div class="window-controls-group">
+                <button class="win-control-btn minimize" title="Minimize"></button>
+                <button class="win-control-btn maximize" title="Maximize"></button>
+                <button class="win-control-btn close" title="Close"></button>
+              </div>
+            </div>
+            <div class="window-body">
+              <div class="browser-app-container">
+                <div class="browser-nav-bar">
+                  <div class="browser-address-input-wrap">
+                    <span class="browser-protocol-tag">http://</span>
+                    <input type="text" class="browser-url-input" id="browser-url-input" value="tx.local">
+                  </div>
+                  <button class="cyber-btn primary" id="browser-go-btn">Go &rarr;</button>
+                </div>
+                <div class="browser-bookmarks-bar">
+                  <button class="bookmark-btn" data-url="tx.local">⭐ tx.local (Tx Console)</button>
+                  <button class="bookmark-btn" data-url="wallet.local">👛 wallet.local (Wallet Explorer)</button>
+                  <button class="bookmark-btn" data-url="ai.local">🧠 ai.local (AI Decision Console)</button>
+                  <button class="bookmark-btn" data-url="api.local">⚡ api.local (Action Broker API)</button>
+                  <button class="bookmark-btn" data-url="contract.local">📜 contract.local (Smart Contract)</button>
+                </div>
+                <div class="browser-viewport" id="browser-viewport">
+                  <!-- Rendered via browser-tool.js -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Window 2: Cyber Terminal -->
+          <div class="cyber-window minimized" id="window-terminal" style="top:50px;left:220px;width:660px;height:440px;z-index:101;">
+            <div class="window-title-bar">
+              <div class="window-title-group">
+                <svg class="window-title-icon" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5" stroke="currentColor" fill="none"/><line x1="12" y1="19" x2="20" y2="19" stroke="currentColor"/></svg>
+                <span class="window-title-text">Cyber Terminal (bash / web3-forensics)</span>
+              </div>
+              <div class="window-controls-group">
+                <button class="win-control-btn minimize"></button>
+                <button class="win-control-btn maximize"></button>
+                <button class="win-control-btn close"></button>
+              </div>
+            </div>
+            <div class="window-body">
+              <div class="terminal-app-container">
+                <div class="terminal-output-area" id="terminal-output-area"></div>
+                <div class="terminal-input-row">
+                  <span class="terminal-prompt-user">analyst@aurelia-web3</span>:<span class="terminal-prompt-path" id="terminal-cwd-indicator">/home/analyst</span>$&nbsp;
+                  <input type="text" class="terminal-active-input" id="terminal-active-input" autofocus autocomplete="off" spellcheck="false">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Window 3: Request Composer -->
+          <div class="cyber-window minimized" id="window-composer" style="top:70px;left:260px;width:720px;height:490px;z-index:102;">
+            <div class="window-title-bar">
+              <div class="window-title-group">
+                <svg class="window-title-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" fill="none"/></svg>
+                <span class="window-title-text">Request Composer & Web3 API Inspector</span>
+              </div>
+              <div class="window-controls-group">
+                <button class="win-control-btn minimize"></button>
+                <button class="win-control-btn maximize"></button>
+                <button class="win-control-btn close"></button>
+              </div>
+            </div>
+            <div class="window-body">
+              <div class="composer-app-container">
+                <div class="composer-url-row">
+                  <select class="composer-method-select" id="composer-method-select">
+                    <option value="POST">POST</option>
+                    <option value="GET">GET</option>
+                  </select>
+                  <input type="text" class="composer-url-input" id="composer-url-input" value="http://api.local/api/v2/action-broker/sign-tx">
+                  <button class="cyber-btn primary" id="composer-send-btn">Send Request</button>
+                  <button class="cyber-btn" id="composer-preset-btn">Load Exploit Preset</button>
+                </div>
+                <div class="composer-editor-split">
+                  <div class="composer-panel-card">
+                    <div class="composer-card-header">
+                      <span>HTTP REQUEST HEADERS</span>
+                      <span style="font-size:10px;color:var(--text-dim);">KEY: VALUE</span>
+                    </div>
+                    <textarea class="composer-textarea" id="composer-headers-input"></textarea>
+                  </div>
+                  <div class="composer-panel-card">
+                    <div class="composer-card-header">
+                      <span>RESPONSE BODY & PAYLOAD</span>
+                      <span id="composer-status-pill" style="font-size:10px;color:var(--text-muted);">READY</span>
+                    </div>
+                    <div class="composer-response-box" id="composer-response-box">// Send request to inspect response body and headers...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Window 4: Evidence Vault -->
+          <div class="cyber-window minimized" id="window-vault" style="top:80px;left:200px;width:680px;height:460px;z-index:103;">
+            <div class="window-title-bar">
+              <div class="window-title-group">
+                <svg class="window-title-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" fill="none"/></svg>
+                <span class="window-title-text">Evidence Vault & Forensics Catalog</span>
+              </div>
+              <div class="window-controls-group">
+                <button class="win-control-btn minimize"></button>
+                <button class="win-control-btn maximize"></button>
+                <button class="win-control-btn close"></button>
+              </div>
+            </div>
+            <div class="window-body">
+              <div class="vault-app-container">
+                <div class="vault-header-row">
+                  <span class="case-id-badge" id="vault-total-count">0 ARTIFACTS</span>
+                  <span style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">All evidence is signed and logged into case records.</span>
+                </div>
+                <div class="vault-grid" id="vault-evidence-grid">
+                  <!-- Rendered via vault-tool.js -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Window 5: Investigation Architecture Map -->
+          <div class="cyber-window minimized" id="window-map" style="top:40px;left:190px;width:780px;height:500px;z-index:104;">
+            <div class="window-title-bar">
+              <div class="window-title-group">
+                <svg class="window-title-icon" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3" stroke="currentColor" fill="none"/><circle cx="6" cy="12" r="3" stroke="currentColor" fill="none"/><circle cx="18" cy="19" r="3" stroke="currentColor" fill="none"/></svg>
+                <span class="window-title-text">Investigation Architecture Map & Trust Graph</span>
+              </div>
+              <div class="window-controls-group">
+                <button class="win-control-btn minimize"></button>
+                <button class="win-control-btn maximize"></button>
+                <button class="win-control-btn close"></button>
+              </div>
+            </div>
+            <div class="window-body">
+              <div class="map-app-container">
+                <div class="map-canvas-area">
+                  <div class="map-node-flow">
+                    <div class="map-node-card" data-node-id="wallet">
+                      <svg class="map-node-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" fill="none"/><circle cx="12" cy="7" r="4" stroke="currentColor" fill="none"/></svg>
+                      <div class="map-node-name">Dormant Wallet</div>
+                      <div class="map-node-role">0x7a39...4b91</div>
+                    </div>
+                    <span class="map-arrow">&rarr;</span>
+                    <div class="map-node-card active-inspect" data-node-id="ai">
+                      <svg class="map-node-icon" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" stroke="currentColor" fill="none"/><circle cx="12" cy="12" r="3" stroke="currentColor" fill="none"/></svg>
+                      <div class="map-node-name">AI Security Guard</div>
+                      <div class="map-node-role">Aurelia-Guard v3.4</div>
+                    </div>
+                    <span class="map-arrow">&rarr;</span>
+                    <div class="map-node-card" data-node-id="broker">
+                      <svg class="map-node-icon" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" stroke="currentColor" fill="none"/><rect x="2" y="14" width="20" height="8" rx="2" stroke="currentColor" fill="none"/></svg>
+                      <div class="map-node-name">Action Broker</div>
+                      <div class="map-node-role">broker.internal</div>
+                    </div>
+                    <span class="map-arrow">&rarr;</span>
+                    <div class="map-node-card" data-node-id="signer">
+                      <svg class="map-node-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" fill="none"/></svg>
+                      <div class="map-node-name">HSM Signer</div>
+                      <div class="map-node-role">signer-hsm.internal</div>
+                    </div>
+                    <span class="map-arrow">&rarr;</span>
+                    <div class="map-node-card vulnerable" data-node-id="contract">
+                      <svg class="map-node-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" fill="none"/></svg>
+                      <div class="map-node-name">Liquidity Vault</div>
+                      <div class="map-node-role">0x19a4... (Solidity)</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="map-inspector-sidebar" id="map-inspector-body">
+                  <!-- Rendered via map-tool.js -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Taskbar -->
+        <footer class="attackbox-taskbar">
+          <div class="taskbar-left">
+            <button class="taskbar-start-btn" onclick="AudioFX.playClick();Toast.info('AURELIA ATTACKBOX', 'Web3 & AI Security Workstation v2.8')">
+              <span class="live-dot"></span> AURELIA SOC
+            </button>
+            <div class="taskbar-items-list" id="taskbar-items-list">
+              <!-- Rendered via attackbox.js -->
+            </div>
+          </div>
+          <div class="taskbar-right">
+            <span class="taskbar-clock">2026-10-03 02:13:07 UTC</span>
+          </div>
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Instructor Modal Overlay -->
+  <div class="modal-overlay" id="instructor-modal-overlay">
+    <div class="cyber-modal">
+      <div class="modal-header">
+        <div class="modal-title">⚙ INSTRUCTOR / DEBUG CONSOLE</div>
+        <button class="toast-close" id="instructor-close-btn">&times;</button>
+      </div>
+      <div class="modal-body" id="instructor-modal-body">
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+          Enter the secure instructor PIN to inspect live state, view solution walk-throughs, and force mission unlocks.
+        </p>
+        <div style="display:flex;gap:8px;">
+          <input type="password" id="instructor-pin-input" class="kc-input-text" placeholder="Enter Instructor PIN (NX047_INSTRUCTOR_2026)" value="NX047_INSTRUCTOR_2026">
+          <button class="cyber-btn primary" id="instructor-auth-btn">Authenticate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final Completion Modal Overlay -->
+  <div class="modal-overlay" id="completion-modal-overlay">
+    <div class="cyber-modal" style="max-width:760px;">
+      <div class="modal-header">
+        <div class="modal-title" style="color:var(--status-success);">🏆 INCIDENT RESOLVED — CASE CLOSED</div>
+      </div>
+      <div class="modal-body">
+        <div class="completion-hero-banner">
+          <span class="case-closed-badge">CASE CONTAINED — NX-047</span>
+          <h2 class="completion-title">The Ghost in the Ledger</h2>
+          <div style="font-size:12px;color:var(--accent-cyan);font-family:var(--font-mono);">
+            PRIMARY FINDING: Decentralized Trust Boundary Decoupling & RAG Context Poisoning
+          </div>
+        </div>
+
+        <div class="completion-stats-grid">
+          <div class="comp-stat-card">
+            <span class="val" id="comp-time-val">--:--</span>
+            <span class="lbl">TOTAL INVESTIGATION TIME</span>
+          </div>
+          <div class="comp-stat-card">
+            <span class="val" style="color:var(--status-success);">6 / 6</span>
+            <span class="lbl">SUB-LABS COMPLETED</span>
+          </div>
+          <div class="comp-stat-card">
+            <span class="val" id="comp-ev-val">5 FOUND</span>
+            <span class="lbl">FORENSIC ARTIFACTS</span>
+          </div>
+        </div>
+
+        <div class="comms-radio-box" style="margin:12px 0;">
+          <div class="comms-title"><span class="live-dot"></span> TEAM CLOSING DEBRIEF — CASE NX-047</div>
+          <div class="dialogue-item">
+            <div class="avatar-small">
+              <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" stroke="#00f0ff" stroke-width="2"/><circle cx="32" cy="24" r="10" fill="#38bdf8"/></svg>
+            </div>
+            <div class="dialogue-content">
+              <span class="dialogue-speaker">Nora</span> <span class="dialogue-role">(Incident Response Lead)</span>
+              <div class="dialogue-text">"Nice work."</div>
+            </div>
+          </div>
+          <div class="dialogue-item">
+            <div class="avatar-small">
+              <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" stroke="#f59e0b" stroke-width="2"/><circle cx="32" cy="24" r="10" fill="#fbbf24"/></svg>
+            </div>
+            <div class="dialogue-content">
+              <span class="dialogue-speaker">Arjun</span> <span class="dialogue-role">(Web3 Security Engineer)</span>
+              <div class="dialogue-text">"How nice?"</div>
+            </div>
+          </div>
+          <div class="dialogue-item">
+            <div class="avatar-small">
+              <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" stroke="#00f0ff" stroke-width="2"/><circle cx="32" cy="24" r="10" fill="#38bdf8"/></svg>
+            </div>
+            <div class="dialogue-content">
+              <span class="dialogue-speaker">Nora</span> <span class="dialogue-role">(Incident Response Lead)</span>
+              <div class="dialogue-text">"The blockchain is clean."</div>
+            </div>
+          </div>
+          <div class="dialogue-item">
+            <div class="avatar-small">
+              <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" stroke="#10b981" stroke-width="2"/><circle cx="32" cy="24" r="10" fill="#34d399"/></svg>
+            </div>
+            <div class="dialogue-content">
+              <span class="dialogue-speaker">Kai</span> <span class="dialogue-role">(AI Security Specialist)</span>
+              <div class="dialogue-text">"The AI is embarrassed."</div>
+            </div>
+          </div>
+          <div class="dialogue-item">
+            <div class="avatar-small">
+              <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" stroke="#a855f7" stroke-width="2"/><circle cx="32" cy="24" r="10" fill="#c084fc"/></svg>
+            </div>
+            <div class="dialogue-content">
+              <span class="dialogue-speaker">Zara</span> <span class="dialogue-role">(Threat Intelligence Analyst)</span>
+              <div class="dialogue-text">"And the attacker?"</div>
+            </div>
+          </div>
+          <div class="dialogue-item">
+            <div class="avatar-small">
+              <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" stroke="#00f0ff" stroke-width="2"/><circle cx="32" cy="24" r="10" fill="#38bdf8"/></svg>
+            </div>
+            <div class="dialogue-content">
+              <span class="dialogue-speaker">Nora</span> <span class="dialogue-role">(Incident Response Lead)</span>
+              <div class="dialogue-text">"Out of doors."</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="attack-path-summary-box">
+          <div style="color:var(--accent-cyan);font-weight:700;margin-bottom:6px;">🎯 CASE NX-047 SOLVED</div>
+          <div style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:8px;">YOU DIDN'T JUST FIND THE BUG. YOU FOLLOWED THE EVIDENCE.</div>
+          <div class="attack-path-step"><span>1. Unknown Threat Actor</span> <span class="arrow">&rarr;</span> <span>2. Dormant EOA Wallet (EV-002)</span></div>
+          <div class="attack-path-step"><span>3. AI Security Guard (EV-003)</span> <span class="arrow">&rarr;</span> <span>4. Injected Context Proof (EV-003)</span></div>
+          <div class="attack-path-step"><span>5. Web3 Action Broker (EV-005)</span> <span class="arrow">&rarr;</span> <span>6. Master HSM Signer & Liquidation (EV-010 & EV-011)</span></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="cyber-btn primary" onclick="window.print()">Download Incident Report</button>
+        <button class="cyber-btn danger" onclick="LabState.resetLab();document.getElementById('completion-modal-overlay').classList.remove('active');">Restart Lab</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="/static/assets/avatars.js"></script>
+  <script src="/static/js/audio.js"></script>
+  <script src="/static/js/toast.js"></script>
+  <script src="/static/js/state.js"></script>
+  <script src="/static/js/attackbox.js"></script>
+  <script src="/static/js/browser-tool.js"></script>
+  <script src="/static/js/terminal-tool.js"></script>
+  <script src="/static/js/composer-tool.js"></script>
+  <script src="/static/js/map-tool.js"></script>
+  <script src="/static/js/vault-tool.js"></script>
+  <script src="/static/js/graph-reconstruction.js"></script>
+  <script src="/static/js/knowledge-check.js"></script>
+  <script src="/static/js/missions.js"></script>
+  <script src="/static/js/instructor.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
