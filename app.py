@@ -22,7 +22,6 @@ def create_app():
 
     @app.route('/')
     def index():
-        # Ensure default investigator session exists
         session = get_or_create_session("default_investigator")
         return render_template('index.html', config=Config, session=session)
 
@@ -32,8 +31,10 @@ def create_app():
 
     return app
 
+# Expose app for Vercel WSGI / Serverless runtime
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
     print("=" * 70)
     print(f"[*] AURELIA CYBER SYSTEMS — {Config.LAB_TITLE}")
     print(f"[*] CASE ID: {Config.CASE_ID} | DIFFICULTY: {Config.DIFFICULTY}")
