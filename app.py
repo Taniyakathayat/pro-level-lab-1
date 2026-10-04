@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, send_from_directory
 from config import Config
 from database import init_db, get_or_create_session
 from routes.api import api_bp
@@ -8,7 +8,12 @@ from routes.terminal_engine import terminal_bp
 from routes.instructor import instructor_bp
 
 def create_app():
-    app = Flask(__name__, static_folder='static', template_folder='templates')
+    app = Flask(
+        __name__,
+        static_folder='static',
+        static_url_path='/static',
+        template_folder='templates'
+    )
     app.config.from_object(Config)
 
     # Initialize Database Schema
@@ -28,6 +33,10 @@ def create_app():
     @app.route('/health')
     def health():
         return jsonify({"status": "ONLINE", "lab": Config.LAB_TITLE, "case_id": Config.CASE_ID})
+
+    @app.route('/static/<path:filename>')
+    def serve_static_fallback(filename):
+        return send_from_directory(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static'), filename)
 
     return app
 
