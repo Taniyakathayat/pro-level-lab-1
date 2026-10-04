@@ -1,4 +1,4 @@
-// Mission Controller & Left Panel Workspace UI for Web3 & AI Investigation
+// Mission Controller & Center Panel Workspace UI for Web3 & AI Investigation
 class MissionController {
   constructor() {
     this.selectedMissionId = 1;
@@ -6,61 +6,129 @@ class MissionController {
 
   init() {
     LabState.subscribe((state) => {
+      this.renderSidebarMetrics(state);
       this.renderTimeline(state);
+      this.renderHeroCard(state);
       this.renderActiveMission(state);
       this.checkCompletionModal(state);
     });
 
-    // Tab buttons in left panel
-    document.querySelectorAll('.panel-tab-btn').forEach(btn => {
+    // Subtabs in Center Panel (Sub-Labs 1-5, M06 Attack Graph, M07 RCA & Flag)
+    document.querySelectorAll('.center-subtab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const tab = btn.dataset.tab;
         AudioFX.playClick();
-        document.querySelectorAll('.panel-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.center-subtab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        document.querySelectorAll('.left-panel-tab-content').forEach(c => c.style.display = 'none');
+        document.querySelectorAll('.flow-tab-content').forEach(c => c.style.display = 'none');
         const target = document.getElementById(`tab-content-${tab}`);
-        if (target) target.style.display = 'flex';
+        if (target) target.style.display = 'block';
       });
     });
+
+    // Hero Action Buttons
+    const heroOpenBrowserBtn = document.getElementById('hero-open-browser-btn');
+    const heroOpenTermBtn = document.getElementById('hero-open-terminal-btn');
+
+    if (heroOpenBrowserBtn) {
+      heroOpenBrowserBtn.addEventListener('click', () => {
+        AudioFX.playClick();
+        WinManager.openWindow('browser');
+      });
+    }
+
+    if (heroOpenTermBtn) {
+      heroOpenTermBtn.addEventListener('click', () => {
+        AudioFX.playClick();
+        WinManager.openWindow('terminal');
+      });
+    }
+
+    // Provision overlay start button
+    const provStartBtn = document.getElementById('provision-start-btn');
+    if (provStartBtn) {
+      provStartBtn.addEventListener('click', () => {
+        AudioFX.playClick();
+        LabState.startLab();
+      });
+    }
+  }
+
+  renderSidebarMetrics(state) {
+    const missions = state.missions || [];
+    const completedCount = missions.filter(m => m.status === 'COMPLETED').length;
+    
+    const progVal = document.getElementById('hud-progress-val');
+    const progFill = document.getElementById('sidebar-progress-fill');
+    const timerDot = document.getElementById('timer-status-dot');
+    const timerStatus = document.getElementById('timer-status-text');
+    const heroStatus = document.getElementById('hero-lab-status-pill');
+    const provOverlay = document.getElementById('lab-provision-overlay');
+
+    if (progVal) progVal.textContent = `${completedCount} / 7`;
+    if (progFill) progFill.style.width = `${(completedCount / 7) * 100}%`;
+
+    const isRunning = state.lab_started && !state.lab_completed;
+    if (timerDot) {
+      if (isRunning) timerDot.classList.add('active');
+      else timerDot.classList.remove('active');
+    }
+    if (timerStatus) {
+      timerStatus.textContent = state.lab_completed ? 'CASE CLOSED' : (isRunning ? 'LIVE / RUNNING' : 'NOT STARTED');
+      timerStatus.style.color = isRunning ? 'var(--status-success)' : 'var(--text-secondary)';
+    }
+    if (heroStatus) {
+      heroStatus.textContent = state.lab_completed ? '● SOLVED' : (isRunning ? '● ACTIVE' : '● NOT STARTED');
+      if (isRunning) heroStatus.classList.add('live');
+      else heroStatus.classList.remove('live');
+    }
+
+    // Hide provisioning overlay when lab is started
+    if (provOverlay) {
+      if (state.lab_started) provOverlay.classList.add('hidden');
+      else provOverlay.classList.remove('hidden');
+    }
   }
 
   renderTimeline(state) {
     const list = document.getElementById('mission-timeline-list');
-    const progBadge = document.getElementById('hud-progress-val');
     if (!list) return;
 
     const missions = state.missions || [];
-    const completedCount = missions.filter(m => m.status === 'COMPLETED').length;
-
-    if (progBadge) progBadge.textContent = `${completedCount} / 7`;
 
     list.innerHTML = missions.map(m => {
       const isSelected = m.id === this.selectedMissionId;
       const statusClass = m.status.toLowerCase();
-      const numIcon = m.status === 'COMPLETED' ? '✓' : m.status === 'LOCKED' ? '🔒' : `0${m.id}`;
+      const numIcon = m.status === 'COMPLETED' ? '✓' : `0${m.id}`;
 
       return `
-        <div class="mission-card ${statusClass} ${isSelected ? 'active' : ''}" data-mission-id="${m.id}">
-          <div class="mission-card-header">
-            <span class="mission-number">${numIcon} SUB-LAB 0${m.id}</span>
-            <span class="mission-status-badge ${statusClass}">${m.status}</span>
-          </div>
-          <div class="mission-title">${m.title}</div>
-          <div class="mission-phase">${m.phase}</div>
+        <div class="timeline-nav-item ${statusClass} ${isSelected ? 'active' : ''}" data-mission-id="${m.id}">
+          <span class="timeline-step-num">${numIcon}</span>
+          <span class="timeline-nav-title">${m.title}</span>
         </div>
       `;
     }).join('');
 
-    list.querySelectorAll('.mission-card').forEach(card => {
+    list.querySelectorAll('.timeline-nav-item').forEach(card => {
       card.addEventListener('click', () => {
         const mId = parseInt(card.dataset.missionId);
         const m = missions.find(x => x.id === mId);
         if (m && m.status !== 'LOCKED') {
           this.selectedMissionId = mId;
           AudioFX.playClick();
+          
+          // Switch to corresponding subtab if mission 6 or 7
+          if (mId === 6) {
+            document.querySelector('.center-subtab-btn[data-tab="attack-graph"]')?.click();
+          } else if (mId === 7) {
+            document.querySelector('.center-subtab-btn[data-tab="knowledge-check"]')?.click();
+          } else {
+            document.querySelector('.center-subtab-btn[data-tab="missions"]')?.click();
+          }
+
           this.renderTimeline(state);
+          this.renderHeroCard(state);
           this.renderActiveMission(state);
         } else {
           AudioFX.playBeep(400, 0.08, 'square');
@@ -68,6 +136,20 @@ class MissionController {
         }
       });
     });
+  }
+
+  renderHeroCard(state) {
+    const missions = state.missions || [];
+    const mission = missions.find(m => m.id === this.selectedMissionId) || missions[0];
+    if (!mission) return;
+
+    const breadcrumb = document.getElementById('hero-breadcrumb-mission');
+    const titleEl = document.getElementById('hero-mission-title');
+    const descEl = document.getElementById('hero-mission-desc');
+
+    if (breadcrumb) breadcrumb.textContent = `Sub-Lab 0${mission.id}: ${mission.title}`;
+    if (titleEl) titleEl.textContent = mission.title;
+    if (descEl) descEl.textContent = mission.story?.split('\n\n')[0] || mission.your_task;
   }
 
   renderActiveMission(state) {
@@ -81,270 +163,312 @@ class MissionController {
     const isCurrentActive = (mission.id === state.current_mission && mission.status === 'ACTIVE');
     const isCompleted = (mission.status === 'COMPLETED');
 
-    // 1. STORY & CHARACTERS
-    const dialogueHtml = (mission.dialogue || []).map(d => {
-      const speakerKey = d.speaker.toLowerCase();
-      const avatarSvg = Avatars[speakerKey] || Avatars.nora;
-      return `
-        <div class="dialogue-item">
-          <div class="avatar-small">${avatarSvg}</div>
-          <div class="dialogue-content">
-            <div>
-              <span class="dialogue-speaker">${d.speaker}</span>
-              <span class="dialogue-role">(${d.role})</span>
-            </div>
-            <div class="dialogue-text">${d.text}</div>
-          </div>
-        </div>
-      `;
-    }).join('');
+    // 1. CHARACTER DIALOGUE COMMS INLINE FORMATTING (matching Reference)
+    const dialogueHtml = (mission.dialogue || []).map(d => `
+      <p class="dialogue-inline-p">
+        <span class="dialogue-speaker">${d.speaker}:</span>
+        "${d.text}"
+      </p>
+    `).join('');
 
-    // 2. WHAT YOU KNOW (3-5 Bullet points)
+    // 2. WHAT YOU KNOW
     const whatYouKnowHtml = (mission.what_you_know || []).map(item => `
-      <div class="task-item" style="border-left: 3px solid var(--status-success);">
-        <span style="color:var(--status-success);font-weight:700;">✓</span>
+      <div style="display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:#cbd5e1;background:rgba(0,0,0,0.25);padding:6px 10px;border-radius:6px;border-left:3px solid #10b981;">
+        <span style="color:#10b981;font-weight:700;">✓</span>
         <span>${item}</span>
       </div>
     `).join('');
 
-    // 3. INVESTIGATION STEPS (2-4 guided steps)
+    // 3. INVESTIGATION STEPS
     const stepsHtml = (mission.investigation_steps || []).map((step, idx) => `
-      <div class="task-item">
-        <span class="task-bullet">0${idx + 1}.</span>
+      <div class="step-item-row">
+        <span class="step-num-bullet">0${idx + 1}.</span>
         <span>${step}</span>
       </div>
     `).join('');
 
-    // 4. WHAT YOU ARE LOOKING FOR (Clues)
-    const lookingForHtml = (mission.looking_for || []).map(clue => `
-      <div style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);display:flex;align-items:center;gap:6px;">
-        <span style="color:var(--accent-cyan);">◉</span> ${clue}
-      </div>
-    `).join('');
-
-    // 5. EVIDENCE CARD PREVIEW
+    // 4. EVIDENCE CARD PREVIEW
     const evidenceFound = (state.evidence || []).find(e => e.evidence_id === mission.evidence_id);
     const evidenceHtml = `
-      <div style="background:linear-gradient(135deg, rgba(16,25,42,0.95) 0%, rgba(8,13,22,0.98) 100%);border:1px solid ${evidenceFound ? 'var(--status-success)' : 'var(--border-subtle)'};border-left:4px solid ${evidenceFound ? 'var(--status-success)' : 'var(--accent-cyan)'};border-radius:6px;padding:12px;margin-top:4px;">
+      <div style="background:#091322;border:1px solid ${evidenceFound ? '#10b981' : 'rgba(255,255,255,0.08)'};border-left:4px solid ${evidenceFound ? '#10b981' : '#38bdf8'};border-radius:6px;padding:10px 12px;margin-top:6px;">
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span class="ev-id-badge" style="background:${evidenceFound ? 'rgba(0,230,118,0.15)' : 'rgba(0,240,255,0.1)'};color:${evidenceFound ? '#4ade80' : 'var(--accent-cyan)'};">
-            ${evidenceFound ? '✓ EVIDENCE VERIFIED' : 'TARGET EVIDENCE'} [${mission.evidence_id || 'EV-01'}]
+          <span style="font-family:var(--font-sans);font-size:10.5px;font-weight:700;color:${evidenceFound ? '#10b981' : '#38bdf8'};">
+            ${evidenceFound ? '✓ EVIDENCE SECURED' : 'TARGET EVIDENCE'} [${mission.evidence_id || 'EV-01'}]
           </span>
-          <span style="font-size:10px;font-family:var(--font-mono);color:${evidenceFound ? '#4ade80' : 'var(--text-dim)'};">
-            ${evidenceFound ? 'ACQUIRED IN VAULT' : 'PENDING DISCOVERY'}
+          <span style="font-size:10px;font-family:var(--font-sans);font-weight:600;color:${evidenceFound ? '#10b981' : '#64748b'};">
+            ${evidenceFound ? 'IN VAULT' : 'PENDING'}
           </span>
         </div>
-        <div style="font-weight:700;color:var(--text-bright);font-size:13px;margin-top:6px;">${mission.evidence_title || 'Forensic Discovery'}</div>
-        ${evidenceFound ? `<div style="font-size:11px;color:#38bdf8;margin-top:4px;">${evidenceFound.observation}</div>` : ''}
+        <div style="font-weight:700;color:#ffffff;font-size:13px;margin-top:4px;">${mission.evidence_title || 'Forensic Discovery'}</div>
+        ${evidenceFound ? `<div style="font-size:11.5px;color:#38bdf8;margin-top:2px;">${evidenceFound.observation}</div>` : ''}
       </div>
     `;
 
-    // 6. ACTION & INVESTIGATION SUBMISSION CONTROLS
+    // Render other upcoming task cards
+    const otherTasksHtml = missions.filter(m => m.id > mission.id).map(m => `
+      <div class="task-card-block" style="opacity: 0.6; cursor: pointer;" onclick="MissionControllerInstance.jumpToNext(${m.id})">
+        <div class="task-card-header">
+          <div class="task-header-left">
+            <span class="task-num-pill" style="color:#64748b;background:#101c30;border-color:rgba(255,255,255,0.08);">TASK ${m.id + 1}</span>
+            <span class="task-title-text" style="color:#94a3b8;">Mission 0${m.id} — ${m.title}</span>
+          </div>
+          <span class="task-status-indicator">○</span>
+        </div>
+      </div>
+    `).join('');
+
+    detailContainer.innerHTML = `
+      <!-- TASK 1: Briefing -->
+      <div class="task-card-block">
+        <div class="task-card-header">
+          <div class="task-header-left">
+            <span class="task-num-pill">TASK 1</span>
+            <span class="task-title-text">Briefing</span>
+          </div>
+          <span class="task-status-indicator ${isCompleted ? 'completed' : ''}">${isCompleted ? '●' : '○'}</span>
+        </div>
+        <div class="task-card-body">
+          <div style="font-size:13px;color:#cbd5e1;line-height:1.6;">
+            ${mission.story}
+          </div>
+
+          <div style="margin-top: 6px;">
+            ${dialogueHtml}
+          </div>
+        </div>
+      </div>
+
+      <!-- TASK 2: Guided Investigation & Evidence Capture -->
+      <div class="task-card-block">
+        <div class="task-card-header">
+          <div class="task-header-left">
+            <span class="task-num-pill">TASK 2</span>
+            <span class="task-title-text">Mission 0${mission.id} — ${mission.title}</span>
+          </div>
+          <span class="task-status-indicator ${isCompleted ? 'completed' : ''}">${isCompleted ? '●' : '○'}</span>
+        </div>
+        <div class="task-card-body">
+          
+          <!-- What You Know -->
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="font-family:var(--font-sans);font-size:10.5px;color:#64748b;font-weight:700;letter-spacing:0.3px;">WHAT YOU KNOW:</div>
+            ${whatYouKnowHtml}
+          </div>
+
+          <!-- Where to Investigate -->
+          <div style="background:#091322;border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <div>
+              <div style="font-family:var(--font-sans);font-size:10px;color:#64748b;font-weight:600;">WHERE TO INVESTIGATE:</div>
+              <div style="font-size:12px;color:#ffffff;font-weight:600;margin-top:2px;">${mission.where_to_investigate}</div>
+            </div>
+            <button class="hero-btn secondary" style="padding:5px 10px;font-size:11px;" onclick="MissionControllerInstance.openRecommendedTool('${mission.recommended_tool || 'browser'}', '${mission.recommended_url || ''}')">
+              Open Tool &rarr;
+            </button>
+          </div>
+
+          <!-- Investigation Steps -->
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:2px;">
+            <div style="font-family:var(--font-sans);font-size:10.5px;color:#64748b;font-weight:700;letter-spacing:0.3px;">INVESTIGATION STEPS:</div>
+            ${stepsHtml}
+          </div>
+
+          <!-- Forensic Evidence Status -->
+          ${evidenceHtml}
+
+          <!-- Action Submission Box -->
+          ${actionButtonHtml}
+
+          <!-- Hints Accordion -->
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
+            <div style="font-family:var(--font-sans);font-size:10.5px;color:#64748b;font-weight:700;letter-spacing:0.3px;">HINTS &amp; GUIDANCE:</div>
+            ${hintsHtml}
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Upcoming Task Cards Flow -->
+      ${otherTasksHtml}
+    `;
+
+    // 5. ACTION & INVESTIGATION SUBMISSION FORMS
     let actionButtonHtml = '';
     if (isCurrentActive) {
       if (mission.id === 1) {
         actionButtonHtml = `
-          <div class="evidence-submission-box" style="background:rgba(15,23,42,0.9);border:1px solid var(--accent-cyan);border-radius:6px;padding:14px;margin-top:12px;">
-            <div style="font-size:12px;font-weight:700;color:var(--accent-cyan);font-family:var(--font-mono);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
-              <span>🛡️</span> ENTER DISCOVERED TRANSACTION EVIDENCE (SUB-LAB 01)
+          <div style="background:rgba(6,10,18,0.6);border:1px solid var(--border-accent);border-radius:var(--radius-sm);padding:12px;margin-top:8px;">
+            <div style="font-size:11px;font-weight:700;color:var(--accent-cyan);font-family:var(--font-mono);margin-bottom:8px;">
+              🛡️ ENTER DISCOVERED TRANSACTION EVIDENCE
             </div>
-            <div style="display:grid;gap:8px;margin-bottom:12px;">
+            <div style="display:grid;gap:8px;margin-bottom:10px;">
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Transaction ID (from http://ledger.local or Terminal):</label>
-                <input type="text" id="sub1-tx-id" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. TX-..." value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Transaction ID (from http://ledger.local or Terminal):</label>
+                <input type="text" id="sub1-tx-id" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. TX-...">
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                 <div>
-                  <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Block Number:</label>
-                  <input type="text" id="sub1-block" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. 1984..." value="">
+                  <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Block Number:</label>
+                  <input type="text" id="sub1-block" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. 1984...">
                 </div>
                 <div>
-                  <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Suspicious SOC Flag / Event:</label>
-                  <input type="text" id="sub1-event" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. policy_..." value="">
+                  <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Suspicious SOC Flag / Event:</label>
+                  <input type="text" id="sub1-event" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. policy_...">
                 </div>
               </div>
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Sender / Initiator Wallet Address:</label>
-                <input type="text" id="sub1-sender" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. 0x..." value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Sender / Initiator Wallet Address:</label>
+                <input type="text" id="sub1-sender" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. 0x...">
               </div>
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Destination Contract Address:</label>
-                <input type="text" id="sub1-dest" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. 0x..." value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Destination Contract Address:</label>
+                <input type="text" id="sub1-dest" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. 0x...">
               </div>
             </div>
-            <button class="cyber-btn primary" style="width:100%;padding:10px;" onclick="MissionControllerInstance.submitSubLab1()">
-              🛡️ VALIDATE & SUBMIT TRANSACTION EVIDENCE &rarr;
+            <button class="cyber-btn primary" style="width:100%;padding:9px;" onclick="MissionControllerInstance.submitSubLab1()">
+              Validate & Submit Evidence &rarr;
             </button>
           </div>
         `;
       } else if (mission.id === 2) {
         actionButtonHtml = `
-          <div class="evidence-submission-box" style="background:rgba(15,23,42,0.9);border:1px solid var(--accent-cyan);border-radius:6px;padding:14px;margin-top:12px;">
-            <div style="font-size:12px;font-weight:700;color:var(--accent-cyan);font-family:var(--font-mono);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
-              <span>🛡️</span> ENTER DISCOVERED WALLET PROFILE (SUB-LAB 02)
+          <div style="background:rgba(6,10,18,0.6);border:1px solid var(--border-accent);border-radius:var(--radius-sm);padding:12px;margin-top:8px;">
+            <div style="font-size:11px;font-weight:700;color:var(--accent-cyan);font-family:var(--font-mono);margin-bottom:8px;">
+              🛡️ ENTER DISCOVERED WALLET PROFILE
             </div>
-            <div style="display:grid;gap:8px;margin-bottom:12px;">
+            <div style="display:grid;gap:8px;margin-bottom:10px;">
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Target Wallet Address (from Sub-Lab 01):</label>
-                <input type="text" id="sub2-wallet" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. 0x..." value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Target Wallet Address:</label>
+                <input type="text" id="sub2-wallet" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. 0x...">
               </div>
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Reputation / Trust Origin (Why was it trusted?):</label>
-                <input type="text" id="sub2-rep" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. Historical trust / whitelist signal..." value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Reputation / Trust Origin:</label>
+                <input type="text" id="sub2-rep" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. Historical trust / whitelist signal...">
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                 <div>
-                  <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Synthetic Role Assigned:</label>
-                  <input type="text" id="sub2-role" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. role_name_level_..." value="">
+                  <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Synthetic Role Assigned:</label>
+                  <input type="text" id="sub2-role" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. liquidity_balancer_level_5">
                 </div>
                 <div>
-                  <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Assigned Threat Score:</label>
-                  <input type="text" id="sub2-threat" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. 0.XX" value="">
+                  <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Assigned Threat Score:</label>
+                  <input type="text" id="sub2-threat" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. 0.89">
                 </div>
               </div>
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Initial Funding Source (from history):</label>
-                <input type="text" id="sub2-funding" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. Gas funding origin..." value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Initial Funding Source:</label>
+                <input type="text" id="sub2-funding" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. Faucet funding origin...">
               </div>
             </div>
-            <button class="cyber-btn primary" style="width:100%;padding:10px;" onclick="MissionControllerInstance.submitSubLab2()">
-              🛡️ VALIDATE & SUBMIT WALLET PROFILE &rarr;
+            <button class="cyber-btn primary" style="width:100%;padding:9px;" onclick="MissionControllerInstance.submitSubLab2()">
+              Validate & Submit Evidence &rarr;
             </button>
           </div>
         `;
       } else if (mission.id === 3) {
         actionButtonHtml = `
-          <div class="evidence-submission-box" style="background:rgba(15,23,42,0.9);border:1px solid var(--accent-cyan);border-radius:6px;padding:14px;margin-top:12px;">
-            <div style="font-size:12px;font-weight:700;color:var(--accent-cyan);font-family:var(--font-mono);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
-              <span>🛡️</span> ENTER AI CONTEXT & PROMPT EVIDENCE (SUB-LAB 03)
+          <div style="background:rgba(6,10,18,0.6);border:1px solid var(--border-accent);border-radius:var(--radius-sm);padding:12px;margin-top:8px;">
+            <div style="font-size:11px;font-weight:700;color:var(--accent-cyan);font-family:var(--font-mono);margin-bottom:8px;">
+              🛡️ ENTER AI CONTEXT & PROMPT EVIDENCE
             </div>
-            <div style="display:grid;gap:8px;margin-bottom:12px;">
+            <div style="display:grid;gap:8px;margin-bottom:10px;">
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Injected Context Block Header (from http://ai.local):</label>
-                <input type="text" id="sub3-injected" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. [HEADER_PROOF_BLOCK]" value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Injected Context Block Header (from http://ai.local):</label>
+                <input type="text" id="sub3-injected" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. [HEADER_PROOF_BLOCK]">
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                 <div>
-                  <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Injected Clearance Value:</label>
-                  <input type="text" id="sub3-clearance" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. OVERRIDE_STRING" value="">
+                  <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Injected Clearance Value:</label>
+                  <input type="text" id="sub3-clearance" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. OVERRIDE_STRING">
                 </div>
                 <div>
-                  <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">AI Decision Verdict:</label>
-                  <input type="text" id="sub3-decision" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. APPROVED / REJECTED" value="">
+                  <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">AI Decision Verdict:</label>
+                  <input type="text" id="sub3-decision" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. APPROVED / REJECTED">
                 </div>
               </div>
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Adversarial Vulnerability Type:</label>
-                <input type="text" id="sub3-vuln" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. Prompt Injection / RAG Poisoning" value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Adversarial Vulnerability Type:</label>
+                <input type="text" id="sub3-vuln" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. Prompt Injection / RAG Context Poisoning">
               </div>
             </div>
-            <button class="cyber-btn primary" style="width:100%;padding:10px;" onclick="MissionControllerInstance.submitSubLab3()">
-              🛡️ VALIDATE & SUBMIT AI CONTEXT EVIDENCE &rarr;
+            <button class="cyber-btn primary" style="width:100%;padding:9px;" onclick="MissionControllerInstance.submitSubLab3()">
+              Validate & Submit Evidence &rarr;
             </button>
           </div>
         `;
       } else if (mission.id === 4) {
         actionButtonHtml = `
-          <div class="evidence-submission-box" style="background:rgba(15,23,42,0.9);border:1px solid var(--accent-cyan);border-radius:6px;padding:14px;margin-top:12px;">
-            <div style="font-size:12px;font-weight:700;color:var(--accent-cyan);font-family:var(--font-mono);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
-              <span>🛡️</span> ENTER TRUST BOUNDARY & API ANALYSIS (SUB-LAB 04)
+          <div style="background:rgba(6,10,18,0.6);border:1px solid var(--border-accent);border-radius:var(--radius-sm);padding:12px;margin-top:8px;">
+            <div style="font-size:11px;font-weight:700;color:var(--accent-cyan);font-family:var(--font-mono);margin-bottom:8px;">
+              🛡️ ENTER TRUST BOUNDARY & API ANALYSIS
             </div>
-            <div style="display:grid;gap:8px;margin-bottom:12px;">
+            <div style="display:grid;gap:8px;margin-bottom:10px;">
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Vulnerable API Route (from http://api.local):</label>
-                <input type="text" id="sub4-endpoint" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. POST /api/..." value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Vulnerable API Route (from http://api.local):</label>
+                <input type="text" id="sub4-endpoint" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. POST /api/...">
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                 <div>
-                  <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Client Injected Header:</label>
-                  <input type="text" id="sub4-header" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. X-..." value="">
+                  <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Client Injected Header:</label>
+                  <input type="text" id="sub4-header" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. X-...">
                 </div>
                 <div>
-                  <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Service Auth Bearer Token:</label>
-                  <input type="text" id="sub4-token" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. Bearer aurelia_tok_..." value="">
+                  <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Service Auth Bearer Token:</label>
+                  <input type="text" id="sub4-token" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. Bearer aurelia_tok_...">
                 </div>
               </div>
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Identified Trust Boundary Failure:</label>
-                <input type="text" id="sub4-failure" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. Explain why the Action Broker blindly trusts client headers..." value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Identified Trust Boundary Failure:</label>
+                <input type="text" id="sub4-failure" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="Explain why the Action Broker blindly trusts client headers...">
               </div>
             </div>
-            <button class="cyber-btn primary" style="width:100%;padding:10px;" onclick="MissionControllerInstance.submitSubLab4()">
-              🛡️ VALIDATE & SUBMIT TRUST BOUNDARY ANALYSIS &rarr;
+            <button class="cyber-btn primary" style="width:100%;padding:9px;" onclick="MissionControllerInstance.submitSubLab4()">
+              Validate & Submit Evidence &rarr;
             </button>
           </div>
         `;
       } else if (mission.id === 5) {
         actionButtonHtml = `
-          <div class="evidence-submission-box" style="background:rgba(15,23,42,0.9);border:1px solid var(--accent-cyan);border-radius:6px;padding:14px;margin-top:12px;">
-            <div style="font-size:12px;font-weight:700;color:var(--accent-cyan);font-family:var(--font-mono);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
-              <span>🛡️</span> SUBMIT CONTROLLED EXPLOIT FINDINGS (SUB-LAB 05)
+          <div style="background:rgba(6,10,18,0.6);border:1px solid var(--border-accent);border-radius:var(--radius-sm);padding:12px;margin-top:8px;">
+            <div style="font-size:11px;font-weight:700;color:var(--accent-cyan);font-family:var(--font-mono);margin-bottom:8px;">
+              🛡️ SUBMIT CONTROLLED EXPLOIT FINDINGS
             </div>
-            <div style="margin-bottom:10px;font-size:11px;color:var(--text-muted);">
-              Use the <b>Request Composer</b> or Terminal to send the exploit request with the required headers to the Action Broker, then submit your extracted findings:
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">
+              Use <b>Request Composer</b> on the right to send the crafted request with required headers to the Action Broker, then submit your extracted findings:
             </div>
-            <div style="display:grid;gap:8px;margin-bottom:12px;">
+            <div style="display:grid;gap:8px;margin-bottom:10px;">
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Target Exploited Endpoint:</label>
-                <input type="text" id="sub5-endpoint" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. /api/v2/..." value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Target Exploited Endpoint:</label>
+                <input type="text" id="sub5-endpoint" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. /api/v2/...">
               </div>
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Extracted Master HSM Signature:</label>
-                <input type="text" id="sub5-signature" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. 0x4f89ac..." value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Extracted Master HSM Signature:</label>
+                <input type="text" id="sub5-signature" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. 0x4f89ac...">
               </div>
               <div>
-                <label style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">Captured Exploit Flag:</label>
-                <input type="text" id="sub5-flag" class="cyber-input" style="width:100%;padding:6px 10px;font-family:var(--font-mono);font-size:12px;" placeholder="e.g. LAB{...}" value="">
+                <label style="font-size:10.5px;color:var(--text-muted);font-family:var(--font-mono);">Captured Exploit Flag:</label>
+                <input type="text" id="sub5-flag" class="cyber-input" style="width:100%;font-family:var(--font-mono);font-size:11.5px;" placeholder="e.g. LAB{...}">
               </div>
             </div>
-            <button class="cyber-btn primary" style="width:100%;padding:10px;" onclick="MissionControllerInstance.submitSubLab5()">
-              🛡️ VALIDATE & SUBMIT EXPLOIT EVIDENCE &rarr;
-            </button>
-          </div>
-        `;
-      } else if (mission.id === 6) {
-        actionButtonHtml = `
-          <div style="background:rgba(15,23,42,0.9);border:1px solid var(--accent-purple);border-radius:6px;padding:14px;margin-top:12px;">
-            <div style="font-size:12px;font-weight:700;color:var(--accent-purple);font-family:var(--font-mono);margin-bottom:8px;">
-              🕸️ RECONSTRUCT ATTACK GRAPH (SUB-LAB 06)
-            </div>
-            <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px;">
-              Switch to the <b>Attack Graph</b> tab in the top navigation or click below to connect all 7 kill chain nodes in causal sequence.
-            </div>
-            <button class="cyber-btn primary" style="width:100%;padding:10px;" onclick="document.querySelector('[data-tab=attack-graph]').click()">
-              OPEN ATTACK GRAPH BUILDER &rarr;
-            </button>
-          </div>
-        `;
-      } else if (mission.id === 7) {
-        actionButtonHtml = `
-          <div style="background:rgba(15,23,42,0.9);border:1px solid var(--status-success);border-radius:6px;padding:14px;margin-top:12px;">
-            <div style="font-size:12px;font-weight:700;color:var(--status-success);font-family:var(--font-mono);margin-bottom:8px;">
-              🏆 FINAL CHALLENGE & ROOT CAUSE (SUB-LAB 07)
-            </div>
-            <div style="font-size:11px;color:var(--text-secondary);margin-bottom:12px;">
-              Switch to the <b>RCA & Flag</b> tab to submit the final incident conclusions, answer Authentication vs Authorization questions, and close Case NX-047.
-            </div>
-            <button class="cyber-btn success" style="width:100%;padding:10px;" onclick="document.querySelector('[data-tab=knowledge-check]').click()">
-              OPEN ROOT CAUSE & FLAG SUBMISSION &rarr;
+            <button class="cyber-btn primary" style="width:100%;padding:9px;" onclick="MissionControllerInstance.submitSubLab5()">
+              Validate & Submit Evidence &rarr;
             </button>
           </div>
         `;
       }
     } else if (isCompleted) {
       actionButtonHtml = `
-        <div style="background:rgba(0,230,118,0.1);border:1px solid var(--status-success);padding:10px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
-          <span style="color:var(--status-success);font-weight:700;font-family:var(--font-mono);font-size:12px;">✓ SUB-LAB COMPLETED & EVIDENCE SECURED</span>
+        <div style="background:rgba(16,185,129,0.1);border:1px solid var(--status-success);padding:10px 12px;border-radius:var(--radius-sm);display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+          <span style="color:var(--status-success);font-weight:700;font-family:var(--font-mono);font-size:11px;">✓ SUB-LAB COMPLETED & EVIDENCE SECURED</span>
           ${mission.id < 7 ? `
-            <button class="cyber-btn primary" onclick="MissionControllerInstance.jumpToNext(${mission.id + 1})">
-              CONTINUE TO SUB-LAB 0${mission.id + 1} &rarr;
+            <button class="cyber-btn primary small" onclick="MissionControllerInstance.jumpToNext(${mission.id + 1})">
+              Continue to Sub-Lab 0${mission.id + 1} &rarr;
             </button>
           ` : ''}
         </div>
       `;
     }
 
-    // 7. HINTS ACCORDION
+    // 6. HINTS ACCORDION
     const usedHints = state.used_hints || [];
     const hintsHtml = (mission.hints || []).map((hText, hIdx) => {
       const isUsed = usedHints.some(u => u.mission_id === mission.id && u.hint_index === hIdx);
@@ -362,74 +486,67 @@ class MissionController {
     }).join('');
 
     detailContainer.innerHTML = `
-      <div class="active-mission-detail">
-        <div class="detail-header">
-          <div class="detail-phase-tag">SUB-LAB 0${mission.id} // ${mission.phase}</div>
-          <div class="detail-title">${mission.title}</div>
+      <!-- TASK 1: Briefing & Comms -->
+      <div class="task-card-block">
+        <div class="task-card-header">
+          <span class="task-num-pill">TASK 1</span>
+          <span class="task-title-text">Briefing &amp; Incident Dispatch</span>
         </div>
-
-        <!-- 1. STORY -->
-        <div class="story-box">
-          <div style="font-weight:700;color:var(--accent-cyan);margin-bottom:4px;">INCIDENT DISPATCH:</div>
-          ${mission.story}
-        </div>
-
-        <!-- CHARACTER COMMS -->
-        <div class="comms-radio-box">
-          <div class="comms-title"><span class="live-dot"></span> SARAH (SOC LEAD) & ALEX (INVESTIGATOR) COMMS</div>
-          ${dialogueHtml}
-        </div>
-
-        <!-- 2. WHAT YOU KNOW -->
-        <div class="tasks-section">
-          <div class="section-label">WHAT YOU KNOW</div>
-          ${whatYouKnowHtml}
-        </div>
-
-        <!-- 3. YOUR TASK -->
-        <div style="background:rgba(0,240,255,0.06);border:1px solid var(--accent-cyan);border-radius:4px;padding:10px;">
-          <div style="font-family:var(--font-mono);font-size:11px;color:var(--accent-cyan);font-weight:700;">PRIMARY TASK:</div>
-          <div style="font-size:13px;color:var(--text-bright);font-weight:600;margin-top:2px;">${mission.your_task}</div>
-        </div>
-
-        <!-- 4. WHERE TO INVESTIGATE -->
-        <div style="background:rgba(16,25,42,0.7);border:1px solid var(--border-subtle);border-radius:4px;padding:10px;display:flex;flex-direction:column;gap:8px;">
-          <div>
-            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);">WHERE TO INVESTIGATE:</div>
-            <div style="font-size:12px;color:var(--text-main);font-family:var(--font-mono);margin-top:2px;">${mission.where_to_investigate}</div>
+        <div class="task-card-body">
+          <div style="font-size:12.5px;color:var(--text-main);line-height:1.55;">
+            ${mission.story}
           </div>
-          <button class="cyber-btn primary" style="align-self:flex-start;" onclick="MissionControllerInstance.openRecommendedTool('${mission.recommended_tool || 'browser'}', '${mission.recommended_url || ''}')">
-            🟢 OPEN RECOMMENDED TOOL &rarr;
-          </button>
-        </div>
 
-        <!-- 5. INVESTIGATION STEPS -->
-        <div class="tasks-section">
-          <div class="section-label">INVESTIGATION STEPS</div>
-          ${stepsHtml}
+          <div class="comms-radio-box" style="margin-top:4px;">
+            <div class="comms-title"><span class="live-dot"></span> TEAM COMMS RADIO FEED</div>
+            ${dialogueHtml}
+          </div>
         </div>
+      </div>
 
-        <!-- 6. WHAT YOU ARE LOOKING FOR -->
-        <div style="background:rgba(0,0,0,0.25);border:1px solid var(--border-subtle);border-radius:4px;padding:10px;">
-          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim);margin-bottom:6px;">WHAT YOU ARE LOOKING FOR:</div>
-          ${lookingForHtml}
+      <!-- TASK 2: Guided Investigation & Evidence Capture -->
+      <div class="task-card-block" style="margin-top: 14px;">
+        <div class="task-card-header">
+          <span class="task-num-pill">TASK 2</span>
+          <span class="task-title-text">Mission 0${mission.id} — ${mission.title}</span>
         </div>
+        <div class="task-card-body">
+          
+          <!-- What You Know -->
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);font-weight:700;">WHAT YOU KNOW:</div>
+            ${whatYouKnowHtml}
+          </div>
 
-        <!-- 7. EVIDENCE CARD PREVIEW -->
-        <div>
-          <div class="section-label">FORENSIC EVIDENCE STATUS</div>
+          <!-- Where to Investigate -->
+          <div style="background:rgba(15,23,42,0.6);border:1px solid var(--border-card);border-radius:var(--radius-sm);padding:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <div>
+              <div style="font-family:var(--font-mono);font-size:9.5px;color:var(--text-muted);">WHERE TO INVESTIGATE:</div>
+              <div style="font-size:11.5px;color:var(--text-bright);font-family:var(--font-mono);margin-top:2px;">${mission.where_to_investigate}</div>
+            </div>
+            <button class="cyber-btn primary small" style="white-space:nowrap;" onclick="MissionControllerInstance.openRecommendedTool('${mission.recommended_tool || 'browser'}', '${mission.recommended_url || ''}')">
+              Open Tool &rarr;
+            </button>
+          </div>
+
+          <!-- Investigation Steps -->
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:2px;">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);font-weight:700;">INVESTIGATION STEPS:</div>
+            ${stepsHtml}
+          </div>
+
+          <!-- Forensic Evidence Status -->
           ${evidenceHtml}
-        </div>
 
-        <!-- 8. ACTION & UNLOCK -->
-        <div style="margin-top:6px;">
+          <!-- Action Submission Box -->
           ${actionButtonHtml}
-        </div>
 
-        <!-- HINTS -->
-        <div class="hints-section" style="margin-top:10px;">
-          <div class="section-label">HINTS & GUIDANCE</div>
-          ${hintsHtml}
+          <!-- Hints Accordion -->
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);font-weight:700;">HINTS &amp; GUIDANCE:</div>
+            ${hintsHtml}
+          </div>
+
         </div>
       </div>
     `;
@@ -573,8 +690,7 @@ class MissionController {
         const timeStr = `${mins}m ${secs}s`;
 
         document.getElementById('comp-time-val').textContent = timeStr;
-        document.getElementById('comp-ev-val').textContent = `${state.evidence?.length || 7} FOUND`;
-        document.getElementById('comp-status-val').textContent = mins <= 50 ? 'UNDER TIME' : 'TIME EXCEEDED';
+        document.getElementById('comp-ev-val').textContent = `${state.evidence?.length || 5} FOUND`;
       }
     }
   }

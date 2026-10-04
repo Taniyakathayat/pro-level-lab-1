@@ -1,61 +1,70 @@
 :root {
-  /* Color Palette: Cyber Command Center Dark Mode */
-  --bg-primary: #06090e;
-  --bg-secondary: #0b111c;
-  --bg-tertiary: #10192a;
-  --bg-card: rgba(16, 25, 42, 0.75);
-  --bg-card-hover: rgba(22, 35, 59, 0.85);
-  --bg-glass: rgba(11, 17, 28, 0.82);
-  --bg-input: #080d16;
+  /* Color Palette: Cyber Command Center Dark Mode matching Reference 2 */
+  --bg-primary: #0a111e;
+  --bg-secondary: #0d1728;
+  --bg-sidebar: #0b1424;
+  --bg-center: #0d192d;
+  --bg-tertiary: #12213a;
+  --bg-card: rgba(16, 29, 52, 0.85);
+  --bg-card-hover: rgba(23, 40, 70, 0.95);
+  --bg-glass: rgba(13, 23, 41, 0.88);
+  --bg-input: #070d18;
+  --bg-attackbox: #142823;
+  --bg-attackbox-desktop: radial-gradient(circle at 60% 40%, #17322b 0%, #0d1c18 100%);
 
   /* Accent Colors */
   --accent-cyan: #00f0ff;
   --accent-cyan-glow: rgba(0, 240, 255, 0.25);
-  --accent-blue: #2979ff;
-  --accent-purple: #7c4dff;
+  --accent-blue: #38bdf8;
+  --accent-purple: #a855f7;
+  --accent-emerald: #10b981;
+  --accent-emerald-glow: rgba(16, 185, 129, 0.35);
+  --accent-orange: #f97316;
+  --accent-orange-glow: rgba(249, 115, 22, 0.3);
   
   /* Status Colors */
-  --status-success: #00e676;
-  --status-success-glow: rgba(0, 230, 118, 0.25);
-  --status-warning: #ffab00;
-  --status-warning-glow: rgba(255, 171, 0, 0.25);
-  --status-danger: #ff1744;
-  --status-danger-glow: rgba(255, 23, 68, 0.3);
-  --status-info: #00b0ff;
+  --status-success: #10b981;
+  --status-success-glow: rgba(16, 185, 129, 0.25);
+  --status-warning: #f59e0b;
+  --status-warning-glow: rgba(245, 158, 11, 0.25);
+  --status-danger: #ef4444;
+  --status-danger-glow: rgba(239, 68, 68, 0.3);
+  --status-info: #38bdf8;
   --status-locked: #475569;
 
   /* Borders & Dividers */
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-accent: rgba(0, 240, 255, 0.35);
+  --border-card: rgba(255, 255, 255, 0.11);
+  --border-accent: rgba(0, 240, 255, 0.3);
   --border-active: #00f0ff;
-  --border-success: #00e676;
-  --border-danger: #ff1744;
+  --border-success: #10b981;
+  --border-danger: #ef4444;
 
   /* Typography */
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Rajdhani', 'Inter', sans-serif;
+  --font-display: 'Inter', 'Rajdhani', sans-serif;
 
   /* Text Colors */
-  --text-main: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-main: #cbd5e1;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-dim: #475569;
   --text-bright: #ffffff;
   --text-cyan: #00f0ff;
-  --text-green: #00e676;
+  --text-green: #10b981;
 
   /* Shadows & Glows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.6);
   --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.8);
   --glow-cyan: 0 0 15px rgba(0, 240, 255, 0.4);
-  --glow-green: 0 0 15px rgba(0, 230, 118, 0.4);
-  --glow-danger: 0 0 15px rgba(255, 23, 68, 0.4);
+  --glow-green: 0 0 15px rgba(16, 185, 129, 0.4);
 
-  /* Layout */
-  --header-height: 62px;
-  --taskbar-height: 44px;
-  --left-panel-width: 440px;
+  /* Layout Dimensions */
+  --sidebar-width: 250px;
+  --center-panel-width: 480px;
+  --taskbar-height: 40px;
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
@@ -65,23 +74,13 @@
 }
 
 /* Animations */
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 8px var(--accent-cyan-glow); }
-  50% { box-shadow: 0 0 20px var(--accent-cyan); }
-}
-
-@keyframes radarScan {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
 
 @keyframes slideInUp {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 

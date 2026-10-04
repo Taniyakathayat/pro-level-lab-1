@@ -40,42 +40,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   MissionControllerInstance.init();
   InstructorPanelInstance.init();
 
-  // 4. Setup Resizable Split Panel
-  const resizer = document.getElementById('panel-resizer');
-  const leftPanel = document.getElementById('left-panel');
-  if (resizer && leftPanel) {
-    let isResizing = false;
-    resizer.addEventListener('mousedown', (e) => {
-      isResizing = true;
-      resizer.classList.add('dragging');
-      document.body.style.cursor = 'col-resize';
-    });
-
-    document.addEventListener('mousemove', (e) => {
-      if (!isResizing) return;
-      const newWidth = Math.max(340, Math.min(e.clientX, 650));
-      leftPanel.style.width = `${newWidth}px`;
-    });
-
-    document.addEventListener('mouseup', () => {
-      if (isResizing) {
-        isResizing = false;
-        resizer.classList.remove('dragging');
-        document.body.style.cursor = 'default';
-      }
-    });
-  }
-
-  // 5. Setup Start Lab & Reset Buttons
+  // 4. Setup Start Lab & Reset Buttons
   const startBtn = document.getElementById('hud-start-lab-btn');
+  const provisionStartBtn = document.getElementById('provision-start-btn');
   const resetBtn = document.getElementById('hud-reset-lab-btn');
+  const overlay = document.getElementById('lab-provision-overlay');
 
-  if (startBtn) {
-    startBtn.addEventListener('click', () => {
-      AudioFX.playClick();
-      LabState.startLab();
-    });
-  }
+  const triggerStart = async () => {
+    AudioFX.playClick();
+    if (overlay) overlay.classList.add('hidden');
+    await LabState.startLab();
+  };
+
+  if (startBtn) startBtn.addEventListener('click', triggerStart);
+  if (provisionStartBtn) provisionStartBtn.addEventListener('click', triggerStart);
 
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
@@ -86,13 +64,63 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 6. Fetch initial state
-  await LabState.fetchState();
+  // 5. Setup Quick Tool Launchers from Center Panel
+  const openBrowserBtn = document.getElementById('hero-open-browser-btn');
+  const openTerminalBtn = document.getElementById('hero-open-terminal-btn');
 
-  // If lab not started, trigger start automatically or prompt
-  if (!LabState.state.lab_started) {
-    await LabState.startLab();
+  if (openBrowserBtn) {
+    openBrowserBtn.addEventListener('click', () => {
+      if (overlay) overlay.classList.add('hidden');
+      WinManager.openWindow('browser');
+      // Switch to attackbox view if on mobile
+      switchToMobilePanel('attackbox-workspace-panel');
+    });
   }
 
-  console.log("[*] Platform Ready. Good luck, Investigator.");
+  if (openTerminalBtn) {
+    openTerminalBtn.addEventListener('click', () => {
+      if (overlay) overlay.classList.add('hidden');
+      WinManager.openWindow('terminal');
+      // Switch to attackbox view if on mobile
+      switchToMobilePanel('attackbox-workspace-panel');
+    });
+  }
+
+  // 6. Mobile Viewport Switcher Logic
+  const mobileNavBtns = document.querySelectorAll('.mobile-nav-tab-btn');
+  const sidebarPanel = document.getElementById('sidebar-nav');
+  const centerPanel = document.getElementById('main-briefing-panel');
+  const attackboxPanel = document.getElementById('attackbox-workspace');
+
+  function switchToMobilePanel(panelClass) {
+    mobileNavBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mobilePanel === panelClass);
+    });
+
+    if (sidebarPanel) sidebarPanel.classList.toggle('mobile-active', panelClass === 'sidebar-nav-panel');
+    if (centerPanel) centerPanel.classList.toggle('mobile-active', panelClass === 'center-task-panel');
+    if (attackboxPanel) attackboxPanel.classList.toggle('mobile-active', panelClass === 'attackbox-workspace-panel');
+  }
+
+  mobileNavBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      AudioFX.playClick();
+      switchToMobilePanel(btn.dataset.mobilePanel);
+    });
+  });
+
+  // Default mobile active panel: Tasks Workspace
+  switchToMobilePanel('center-task-panel');
+
+  // 7. Subscribe to Lab State
+  LabState.subscribe((state) => {
+    if (state.lab_started && overlay) {
+      overlay.classList.add('hidden');
+    }
+  });
+
+  // 8. Fetch initial state
+  await LabState.fetchState();
+
+  console.log("[*] Platform Ready. Desktop & Mobile viewports initialized.");
 });

@@ -1,8 +1,20 @@
-/* Right Panel: AttackBox Simulated Cybersecurity Desktop */
+/* ========================================================= */
+/* COLUMN 3: ATTACKBOX WORKSTATION PANEL (FLEX)             */
+/* ========================================================= */
+.attackbox-workspace-panel {
+  flex: 1;
+  height: 100vh;
+  background: #11221d;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
 .attackbox-desktop {
   flex: 1;
   position: relative;
-  background: radial-gradient(circle at 50% 30%, #0d172a 0%, #06090e 100%);
+  background: radial-gradient(circle at 60% 40%, #163229 0%, #0d1e1a 100%);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -14,46 +26,131 @@
   position: absolute;
   inset: 0;
   background-image: 
-    linear-gradient(to right, rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+    linear-gradient(to right, rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+  background-size: 36px 36px;
   pointer-events: none;
 }
 
 /* Desktop Watermark */
 .desktop-watermark {
   position: absolute;
-  bottom: 60px;
-  right: 24px;
+  bottom: 54px;
+  right: 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  opacity: 0.25;
+  opacity: 0.18;
   pointer-events: none;
 }
 
 .desktop-watermark .wm-title {
   font-family: var(--font-mono);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
-  color: var(--accent-cyan);
+  color: var(--accent-emerald);
   letter-spacing: 2px;
 }
 
 .desktop-watermark .wm-sub {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
+}
+
+/* Virtual Lab Provisioning Overlay (matching Reference Image 2) */
+.virtual-lab-provision-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 24, 20, 0.82);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.virtual-lab-provision-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.provision-modal-card {
+  background: #0f221e;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(16, 185, 129, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 34px 30px;
+  max-width: 440px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  animation: slideInUp 0.3s ease;
+}
+
+.provision-icon-wrap {
+  width: 68px;
+  height: 68px;
+  border-radius: var(--radius-md);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.provision-icon-wrap svg {
+  stroke: var(--accent-emerald) !important;
+}
+
+.provision-card-title {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--text-bright);
+  font-family: var(--font-display);
+  letter-spacing: 0.3px;
+}
+
+.provision-card-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.55;
+}
+
+.provision-start-btn {
+  margin-top: 8px;
+  background: #10b981;
+  color: #041f17;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 28px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+  transition: all var(--transition-fast);
+}
+
+.provision-start-btn:hover {
+  background: #34d399;
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.65);
+  transform: translateY(-1px);
 }
 
 /* Desktop Shortcuts Grid */
 .desktop-icons-grid {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 18px;
+  left: 18px;
   display: grid;
-  grid-template-columns: repeat(2, 90px);
-  gap: 16px;
+  grid-template-columns: repeat(2, 84px);
+  gap: 14px;
   z-index: 10;
 }
 
@@ -61,11 +158,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: transparent;
   border: 1px solid transparent;
-  padding: 8px 6px;
-  border-radius: var(--radius-md);
+  padding: 6px 4px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all var(--transition-fast);
   outline: none;
@@ -83,10 +180,10 @@
 }
 
 .icon-graphic-box {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  background: var(--bg-tertiary);
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: #091a1d;
   border: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
@@ -101,13 +198,13 @@
 }
 
 .icon-graphic-box svg {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
 }
 
 .desktop-icon-label {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-main);
   text-align: center;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
@@ -123,7 +220,7 @@
 
 .cyber-window {
   position: absolute;
-  background: var(--bg-secondary);
+  background: #09131f;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
@@ -143,22 +240,22 @@
 }
 
 .cyber-window.maximized {
-  top: 8px !important;
-  left: 8px !important;
-  width: calc(100% - 16px) !important;
-  height: calc(100% - 16px) !important;
+  top: 6px !important;
+  left: 6px !important;
+  width: calc(100% - 12px) !important;
+  height: calc(100% - 12px) !important;
   border-radius: var(--radius-sm);
 }
 
 /* Window Title Bar */
 .window-title-bar {
-  height: 36px;
-  background: linear-gradient(180deg, #162032 0%, #0e1524 100%);
+  height: 34px;
+  background: #0d1a29;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
+  padding: 0 10px;
   cursor: grab;
   user-select: none;
 }
@@ -174,14 +271,14 @@
 }
 
 .window-title-icon {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   fill: var(--accent-cyan);
 }
 
 .window-title-text {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   color: var(--text-bright);
 }
@@ -189,12 +286,12 @@
 .window-controls-group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .win-control-btn {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
@@ -226,12 +323,12 @@
 /* Bottom Taskbar */
 .attackbox-taskbar {
   height: var(--taskbar-height);
-  background: linear-gradient(180deg, #0f172a 0%, #070c14 100%);
+  background: #071016;
   border-top: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
+  padding: 0 10px;
   position: relative;
   z-index: 100;
 }
@@ -249,12 +346,21 @@
   background: rgba(0, 240, 255, 0.1);
   border: 1px solid var(--border-accent);
   color: var(--accent-cyan);
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--status-success);
+  box-shadow: 0 0 6px var(--status-success);
+  animation: blink 1.5s infinite;
 }
 
 .taskbar-items-list {
@@ -270,10 +376,10 @@
   background: var(--bg-tertiary);
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10.5px;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -288,11 +394,11 @@
 .taskbar-right {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .taskbar-clock {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--text-muted);
 }
