@@ -58,7 +58,7 @@
       </div>
       <div class="hud-stat-box">
         <span class="hud-stat-label">PROGRESS</span>
-        <span class="hud-stat-value" id="hud-progress-val" style="color:var(--status-success);">0 / 6</span>
+        <span class="hud-stat-value" id="hud-progress-val" style="color:var(--status-success);">0 / 7</span>
       </div>
     </div>
 
@@ -86,13 +86,13 @@
       <!-- Navigation Tabs inside Left Panel -->
       <nav class="panel-tab-nav">
         <button class="panel-tab-btn active" data-tab="missions">
-          Sub-Labs <span class="tab-badge" id="tab-mission-badge">1-6</span>
+          Sub-Labs <span class="tab-badge" id="tab-mission-badge">1-5</span>
         </button>
         <button class="panel-tab-btn" data-tab="attack-graph">
-          Attack Graph <span class="tab-badge">M05</span>
+          Attack Graph <span class="tab-badge">M06</span>
         </button>
         <button class="panel-tab-btn" data-tab="knowledge-check">
-          RCA & Flag <span class="tab-badge">M06</span>
+          RCA & Flag <span class="tab-badge">M07</span>
         </button>
       </nav>
 
@@ -109,15 +109,16 @@
         </div>
       </div>
 
-      <!-- Tab 2: Attack Graph Reconstruction (Sub-Lab 05) -->
+      <!-- Tab 2: Attack Graph Reconstruction (Mission 06) -->
       <div class="left-panel-content left-panel-tab-content" id="tab-content-attack-graph" style="display:none;">
         <div class="graph-builder-container">
           <div class="detail-header">
-            <span class="detail-phase-tag">SUB-LAB 05 INTERACTIVE BOARD</span>
-            <div class="detail-title">Reconstruct the Attack Path</div>
+            <span class="detail-phase-tag">MISSION 06 // ATTACK GRAPH RECONSTRUCTION</span>
+            <div class="detail-title">Reconstruct the Ghost</div>
           </div>
           <div class="graph-instruction-box">
-            Assemble the full forensic kill chain in sequential order (1 to 7). Connect the adversary's path from the dormant wallet and AI prompt poisoning to the smart contract liquidation.
+            SEVEN CLUES. ONE CHAIN. RECONSTRUCT THE GHOST.<br>
+            Connect all 7 causal nodes in precise sequential order from the initial adversary to the smart contract liquidation.
           </div>
           
           <div class="graph-slots-sequence" id="attack-graph-slots">
@@ -130,27 +131,27 @@
         </div>
       </div>
 
-      <!-- Tab 3: Knowledge Check & Flag Submission (Sub-Lab 06) -->
+      <!-- Tab 3: Knowledge Check & Flag Submission (Mission 07) -->
       <div class="left-panel-content left-panel-tab-content" id="tab-content-knowledge-check" style="display:none;">
         <div class="knowledge-check-card">
           <div class="detail-header">
-            <span class="detail-phase-tag">SUB-LAB 06 ROOT CAUSE ANALYSIS</span>
+            <span class="detail-phase-tag">MISSION 07 // FINAL CHALLENGE & ROOT CAUSE</span>
             <div class="detail-title">Incident Assessment & RCA</div>
           </div>
 
           <div class="kc-question-group">
             <label class="kc-question-label">1. Authentication in Web3 verifies:</label>
-            <input type="text" id="kc-authn-input" class="kc-input-text" placeholder="e.g. Identity / Wallet signature verification (who the caller is)">
+            <input type="text" id="kc-authn-input" class="kc-input-text" placeholder="Explain what Authentication verifies in this architecture...">
           </div>
 
           <div class="kc-question-group">
             <label class="kc-question-label">2. Authorization in Web3 verifies:</label>
-            <input type="text" id="kc-authz-input" class="kc-input-text" placeholder="e.g. Permissions & Clearances (what actions/funds the caller is allowed to access)">
+            <input type="text" id="kc-authz-input" class="kc-input-text" placeholder="Explain what Authorization verifies in this architecture...">
           </div>
 
           <div class="kc-question-group">
             <label class="kc-question-label">3. Incident Executive Summary (2–3 sentences):</label>
-            <textarea id="kc-summary-input" class="kc-input-text kc-textarea" placeholder="Explain how the poisoned Oracle context tricked the AI Security Guard into instructing the Action Broker to sign the 5M USDC liquidation..."></textarea>
+            <textarea id="kc-summary-input" class="kc-input-text kc-textarea" placeholder="Explain how the poisoned AI Oracle context bypassed authorization to drain the smart contract..."></textarea>
           </div>
 
           <button class="cyber-btn primary" id="submit-kc-btn" style="width:100%;">
@@ -161,11 +162,11 @@
         <div class="flag-submission-box">
           <div class="section-label" style="color:var(--status-success);">CAPTURED FLAG SUBMISSION</div>
           <p style="font-size:11px;color:var(--text-muted);">
-            Paste the decrypted flag obtained during your Sub-Lab 04 smart contract exploit.
+            Paste the decrypted flag obtained during your controlled exploitation to finalize the case.
           </p>
           <div class="flag-input-group">
-            <input type="text" id="flag-input-field" class="flag-input-field" placeholder="LAB{ai_context_poisoned_...}">
-            <button class="cyber-btn success" id="submit-flag-btn">Submit Flag</button>
+            <input type="text" id="flag-input-field" class="flag-input-field" placeholder="LAB{...}">
+            <button class="cyber-btn success" id="submit-flag-btn">Submit Flag & Finalize Lab</button>
           </div>
         </div>
       </div>
@@ -204,7 +205,7 @@
             <div class="icon-graphic-box">
               <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             </div>
-            <span class="desktop-icon-label">Req Composer</span>
+            <span class="desktop-icon-label">Request Composer</span>
           </button>
 
           <button class="desktop-icon-btn" data-target-window="vault" title="Double click to open">
@@ -230,7 +231,7 @@
             <div class="window-title-bar">
               <div class="window-title-group">
                 <svg class="window-title-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" fill="none"/><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor"/></svg>
-                <span class="window-title-text">Cyber Browser — Web3 & AI Mesh Explorer</span>
+                <span class="window-title-text">Cyber Browser — Internal Synthetic Network</span>
               </div>
               <div class="window-controls-group">
                 <button class="win-control-btn minimize" title="Minimize"></button>
@@ -243,16 +244,18 @@
                 <div class="browser-nav-bar">
                   <div class="browser-address-input-wrap">
                     <span class="browser-protocol-tag">http://</span>
-                    <input type="text" class="browser-url-input" id="browser-url-input" value="tx.local">
+                    <input type="text" class="browser-url-input" id="browser-url-input" value="ledger.local">
                   </div>
                   <button class="cyber-btn primary" id="browser-go-btn">Go &rarr;</button>
                 </div>
                 <div class="browser-bookmarks-bar">
-                  <button class="bookmark-btn" data-url="tx.local">⭐ tx.local (Tx Console)</button>
-                  <button class="bookmark-btn" data-url="wallet.local">👛 wallet.local (Wallet Explorer)</button>
-                  <button class="bookmark-btn" data-url="ai.local">🧠 ai.local (AI Decision Console)</button>
-                  <button class="bookmark-btn" data-url="api.local">⚡ api.local (Action Broker API)</button>
-                  <button class="bookmark-btn" data-url="contract.local">📜 contract.local (Smart Contract)</button>
+                  <button class="bookmark-btn" data-url="ledger.local">⭐ ledger.local</button>
+                  <button class="bookmark-btn" data-url="wallet.local">👛 wallet.local</button>
+                  <button class="bookmark-btn" data-url="ai.local">🧠 ai.local</button>
+                  <button class="bookmark-btn" data-url="oracle.local">🔮 oracle.local</button>
+                  <button class="bookmark-btn" data-url="api.local">⚡ api.local</button>
+                  <button class="bookmark-btn" data-url="broker.local">🌐 broker.local</button>
+                  <button class="bookmark-btn" data-url="vault.local">📜 vault.local</button>
                 </div>
                 <div class="browser-viewport" id="browser-viewport">
                   <!-- Rendered via browser-tool.js -->
@@ -266,7 +269,7 @@
             <div class="window-title-bar">
               <div class="window-title-group">
                 <svg class="window-title-icon" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5" stroke="currentColor" fill="none"/><line x1="12" y1="19" x2="20" y2="19" stroke="currentColor"/></svg>
-                <span class="window-title-text">Cyber Terminal (bash / web3-forensics)</span>
+                <span class="window-title-text">Cyber Terminal (bash / sandboxed-forensics)</span>
               </div>
               <div class="window-controls-group">
                 <button class="win-control-btn minimize"></button>
@@ -278,7 +281,7 @@
               <div class="terminal-app-container">
                 <div class="terminal-output-area" id="terminal-output-area"></div>
                 <div class="terminal-input-row">
-                  <span class="terminal-prompt-user">analyst@aurelia-web3</span>:<span class="terminal-prompt-path" id="terminal-cwd-indicator">/home/analyst</span>$&nbsp;
+                  <span class="terminal-prompt-user">analyst@aurelia-soc</span>:<span class="terminal-prompt-path" id="terminal-cwd-indicator">/home/analyst</span>$&nbsp;
                   <input type="text" class="terminal-active-input" id="terminal-active-input" autofocus autocomplete="off" spellcheck="false">
                 </div>
               </div>
@@ -286,11 +289,11 @@
           </div>
 
           <!-- Window 3: Request Composer -->
-          <div class="cyber-window minimized" id="window-composer" style="top:70px;left:260px;width:720px;height:490px;z-index:102;">
+          <div class="cyber-window minimized" id="window-composer" style="top:70px;left:260px;width:720px;height:510px;z-index:102;">
             <div class="window-title-bar">
               <div class="window-title-group">
                 <svg class="window-title-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" fill="none"/></svg>
-                <span class="window-title-text">Request Composer & Web3 API Inspector</span>
+                <span class="window-title-text">Request Composer — Web3 Microservice Inspector</span>
               </div>
               <div class="window-controls-group">
                 <button class="win-control-btn minimize"></button>
@@ -304,22 +307,49 @@
                   <select class="composer-method-select" id="composer-method-select">
                     <option value="POST">POST</option>
                     <option value="GET">GET</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                    <option value="OPTIONS">OPTIONS</option>
                   </select>
-                  <input type="text" class="composer-url-input" id="composer-url-input" value="http://api.local/api/v2/action-broker/sign-tx">
-                  <button class="cyber-btn primary" id="composer-send-btn">Send Request</button>
-                  <button class="cyber-btn" id="composer-preset-btn">Load Exploit Preset</button>
+                  <input type="text" class="composer-url-input" id="composer-url-input" placeholder="http://api.local/api/v2/action-broker/sign-tx">
+                  <button class="cyber-btn primary" id="composer-send-btn">SEND REQUEST</button>
+                  <button class="cyber-btn" id="composer-save-btn">SAVE REQUEST</button>
+                  <button class="cyber-btn danger" id="composer-clear-btn">CLEAR</button>
                 </div>
+
+                <div class="composer-tabs-bar" style="display:flex;gap:6px;margin:8px 0;">
+                  <button class="cyber-btn small composer-subtab-btn active" data-subtab="headers">HEADERS</button>
+                  <button class="cyber-btn small composer-subtab-btn" data-subtab="params">PARAMETERS</button>
+                  <button class="cyber-btn small composer-subtab-btn" data-subtab="body">BODY</button>
+                </div>
+
                 <div class="composer-editor-split">
                   <div class="composer-panel-card">
-                    <div class="composer-card-header">
-                      <span>HTTP REQUEST HEADERS</span>
-                      <span style="font-size:10px;color:var(--text-dim);">KEY: VALUE</span>
+                    <div id="composer-subtab-headers-view">
+                      <div class="composer-card-header">
+                        <span>HTTP REQUEST HEADERS (KEY: VALUE)</span>
+                      </div>
+                      <textarea class="composer-textarea" id="composer-headers-input" placeholder="Authorization: Bearer <token>&#10;Content-Type: application/json"></textarea>
                     </div>
-                    <textarea class="composer-textarea" id="composer-headers-input"></textarea>
+
+                    <div id="composer-subtab-params-view" style="display:none;">
+                      <div class="composer-card-header">
+                        <span>QUERY PARAMETERS (KEY=VALUE)</span>
+                      </div>
+                      <textarea class="composer-textarea" id="composer-params-input" placeholder="session_id=default_investigator&#10;debug=true"></textarea>
+                    </div>
+
+                    <div id="composer-subtab-body-view" style="display:none;">
+                      <div class="composer-card-header">
+                        <span>REQUEST BODY (JSON)</span>
+                      </div>
+                      <textarea class="composer-textarea" id="composer-body-input" placeholder="{&#10;  &quot;transaction_id&quot;: &quot;TX-NX047-0213&quot;&#10;}"></textarea>
+                    </div>
                   </div>
+
                   <div class="composer-panel-card">
                     <div class="composer-card-header">
-                      <span>RESPONSE BODY & PAYLOAD</span>
+                      <span>RESPONSE HEADERS & BODY</span>
                       <span id="composer-status-pill" style="font-size:10px;color:var(--text-muted);">READY</span>
                     </div>
                     <div class="composer-response-box" id="composer-response-box">// Send request to inspect response body and headers...</div>

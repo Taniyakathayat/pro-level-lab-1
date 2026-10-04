@@ -49,12 +49,24 @@ def init_db():
         title TEXT,
         category TEXT,
         source TEXT,
+        timestamp TEXT,
+        confidence TEXT,
         observation TEXT,
         significance TEXT,
         discovered_at REAL,
         UNIQUE(session_id, evidence_id)
     )
     ''')
+
+    # Ensure columns exist if table was created previously
+    try:
+        cursor.execute("ALTER TABLE evidence ADD COLUMN timestamp TEXT")
+    except Exception:
+        pass
+    try:
+        cursor.execute("ALTER TABLE evidence ADD COLUMN confidence TEXT")
+    except Exception:
+        pass
 
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS hint_logs (
@@ -166,19 +178,26 @@ def reset_lab_session(session_id="default_investigator"):
     conn.commit()
     conn.close()
 
-def add_evidence(session_id, evidence_id, title, category, source, observation, significance):
+def add_evidence(session_id, evidence_id, title, category, source, observation, significance, timestamp=None, confidence="HIGH (95%)"):
     conn = get_db_connection()
     cursor = conn.cursor()
     now = time.time()
+    ts = timestamp or time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime())
     try:
         cursor.execute('''
-            INSERT INTO evidence (session_id, evidence_id, title, category, source, observation, significance, discovered_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (session_id, evidence_id, title, category, source, observation, significance, now))
+            INSERT INTO evidence (session_id, evidence_id, title, category, source, timestamp, confidence, observation, significance, discovered_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (session_id, evidence_id, title, category, source, ts, confidence, observation, significance, now))
         conn.commit()
         added = True
     except sqlite3.IntegrityError:
-        added = False
+        cursor.execute('''
+            UPDATE evidence
+            SET title = ?, category = ?, source = ?, timestamp = ?, confidence = ?, observation = ?, significance = ?
+            WHERE session_id = ? AND evidence_id = ?
+        ''', (title, category, source, ts, confidence, observation, significance, session_id, evidence_id))
+        conn.commit()
+        added = True
     conn.close()
     return added
 
